@@ -26,6 +26,8 @@ module mult256
     begin
       if (!rst)
 	cnt <= '0;
+      else if (cnt == N)
+	cnt <= cnt;
       else
 	cnt <= cnt + 1'b1;  
     end

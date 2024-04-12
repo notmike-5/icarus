@@ -6,5 +6,5 @@ iverilog -g2005-sv -o tb/mod_q_tb tb/mod_q_tb.sv mod_q.sv divu256.sv
 
 printf "$?"
 
-#source tb/mult
-./tb/mod_q_tb
+source tb/mult_tb
+#source tb/mod_q_tb
