@@ -1,9 +1,7 @@
-module fulladder(
-   input       a,
-   input       b,
-   input       cin,
-   output wire cout,
-   output wire sum);
+module fulladder (
+ input	     a, b, cin,
+ output wire sum, cout
+		  );
   
   assign sum = a ^ b ^ cin;
   assign cout = ((a ^ b) & cin) | (a & b);

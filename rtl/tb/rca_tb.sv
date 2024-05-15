@@ -1,29 +1,32 @@
 // Testbench: N-bit Ripple-Carry Adder/Subtractor
-module rca_tb #(parameter N = 3);
- reg [N:0]  a, b;
- wire [N:0] result, cout;
- bit	    ctrl;
+`timescale 1 us / 10 ps
 
- rca_add rcas (a, b, ctrl, result, cout);
+module rca_tb #(parameter N = 4)();
+ reg [N-1:0]  a, b;
+ reg	      cin;
+ wire [N-1:0] sum;
+ wire	      cout;
+ 
+ rca_add #(.N(N)) rca (a, b, cin, sum, cout);
 
  initial begin
-  $dumpfile("rca_tb.vcd");
-  $dumpvars(0, rca_tb);
+  $display();
+  $display("TB: Ripple-Carry Adder\n######################");
+  $monitor("%t: a: %b, b: %b, sum: %b, cout: %b", 
+	   $time, a, b, sum, cout);
+ 
+  cin = 0; 
+  a = 4'b0110; b = 4'b1100; #10;
+  a = 4'b1110; b = 4'b1000; #10;
+  a = 4'b0111; b = 4'b1110; #10;
+  a = 4'b0010; b = 4'b1001; #10;
+  
+  $finish();
+ end          
 
-  $monitor("%t: CTRL: %b, a: %b, b: %b  -->  Result: %b", 
-	   $time, ctrl, a, b, result, cout[N]);
-  
-  ctrl = 1; 
-  a = 1; b = 0; #10;
-  a = 2; b = 4; #10;
-  a = 11; b = 6; #10;
-  a = 5; b = 3; #10;
-  
-  ctrl = 1; 
-  a = 1; b = 0; #10;
-  a = 2; b = 4; #10;
-  a = 11; b = 6; #10;
-  a = 5; b = 3; #10;
-  $finish;
-  
- end // initial begin
+ initial begin
+  $dumpfile("waves/rca_tb.vcd");
+  $dumpvars(0, rca_tb);
+ end
+ 
+endmodule

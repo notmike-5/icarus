@@ -32,16 +32,17 @@
 /*
  Stage 1: A, B, C, D can be calculated together.
  Stage 2: E, F, G, H can be calculated together.
- 
  */
 
-module pointadd
-  #()(input clk, rst_n,
-      input [255:0]  x1, y1,
-      input [255:0]  x2, y2,
-      output [255:0] x3, y3);
+module point_add #(N=256);
+  (input	  clk, rst_n,
+   input [N-1:0]  x1, y1,
+   input [N-1:0]  x2, y2,
+   output [N-1:0] x3, y3);
 
-  wire [2:0] mult_st, div_st;
+  wire [N-1:0] mult_st, div_st;
+  
+  reg [N-1:0]  P1[3:0], P2[3:0];  // P_n = (X/Z, Y/Z, Z, T=XY)
   
   // submodule instantiations
   divu256 U0 (.clk(clk), .rst(rst_n), 
@@ -51,3 +52,15 @@ module pointadd
   mult256 U1 (.clk(clk), .rst(rst_n), 
 	      .a(a), .b(b), .prod(prod), .acc(acc),
 	      .data_rdy(data_rdy), .state(mult_st));
+
+  always @(posedge clk, negedge rst_n)
+    if (!rst_n) begin
+      A <= '0;
+      B <= '0;
+      C <= '0;
+      D <= '0;
+      E <= '0;
+      F <= '0;
+      G <= '0;
+      H <= '0;
+      

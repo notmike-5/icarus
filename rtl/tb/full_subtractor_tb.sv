@@ -8,6 +8,7 @@ module full_subtractor_tb ();
  full_subtractor U0 (a, b, bin, diff, bout);
 
  initial begin
+  $display();
   $display("Full_Subtractor Truth Table\n===========================");
   $monitor("%t: a: %b, b: %b, bin: %b, diff: %b, bout: %b", 
 	   $time, a, b, bin, diff, bout);
