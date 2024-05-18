@@ -1,8 +1,6 @@
-// sequential N-bit x N-bit multiplier
-module mult256 
-  #(
-    parameter N = 256
-    )
+// Sequential, N-bit x N-bit multiplier
+
+module mult256 #(parameter N = 256)
   (
    input wire		  clk,
    input wire		  rst,

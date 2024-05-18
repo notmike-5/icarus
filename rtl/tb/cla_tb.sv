@@ -1,30 +1,33 @@
-`timescale 1 us / 10 ps
+`timescale 1 ns / 100 ps
 
-module cla_tb #(parameter N = 3)();
- reg [N-1:0] a = 0;
- reg [N-1:0] b = 0;
- wire [N:0]  sum;
+// Testbench: N-bit Carry Lookahead Adder
 
- cla_add #(.N(N)) cla_instance (.a(a), .b(b), .sum(sum));
+module cla_tb #(parameter N = 3) ();
+  reg [N-1:0] a = 0;
+  reg [N-1:0] b = 0;
+  reg	      cin;
+  wire [N-1:0] sum;
+  wire	       cout;
+  
+  cla_add #(.N(N)) cla (.a(a), .b(b), .cin(cin), .sum(sum), .cout(cout));
 
- initial 
-   begin
-    $display();
-    $display("TB: Carry Look-ahead Adder\n##########################");
-    $monitor("%t: a: %b, b: %b, sum: %b", 
-	     $time, a, b, sum);
-    
-    a = 3'b000; b = 3'b001; #10;
-    a = 3'b010; b = 3'b010; #10;
-    a = 3'b101; b = 3'b110; #10;
-    a = 3'b111; b = 3'b111; #10;
+  initial 
+    begin
+      $display();
+      $display("TB: Carry Lookahead Adder\n##########################");
 
-    $finish();
-   end
- 
- initial begin
-  $dumpfile("waves/cla256.vcd");
-  $dumpvars(0, cla_tb);
- end
+      $dumpfile("waves/cla256.vcd");
+      $dumpvars(0, cla_tb);
+      
+      $monitor("%t: a: %b, b: %b, sum: %b, cout: %b", 
+	       $time, a, b, sum, cout);
 
+      cin = 0;
+      a = 3'b000; b = 3'b001; #1;
+      a = 3'b010; b = 3'b010; #1;
+      a = 3'b101; b = 3'b110; #1;
+      a = 3'b111; b = 3'b111; #1;
+      
+      $finish();
+    end
 endmodule

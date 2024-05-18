@@ -12,10 +12,18 @@ iverilog -g2005-sv -o mod_q_tb mod_q_tb.sv ../mod_q.sv ../divu256.sv
 
 #printf "$?" # check success at each stage and only run successful testbenches?
 
+# add256.sv
 ./full_adder_tb
 ./full_subtractor_tb
 ./rca_tb
 ./cla_tb 
 ./add_sub_tb
-#source tb/mult_tb
-#source tb/mod_q_tb
+
+# mult256.sv
+#./mult_tb
+
+# divu256.sv
+#./divu_tb
+
+# mod_q.sv
+#./mod_q_tb

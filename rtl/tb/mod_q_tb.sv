@@ -1,4 +1,7 @@
+`timescale 1 ns / 100 ps
+
 // testbench for reduction modulo q module 
+
 module mod_q_tb #(parameter N = 256);
   reg [N-1:0] a;
   reg [N-1:0] b;
@@ -7,9 +10,6 @@ module mod_q_tb #(parameter N = 256);
   mod_q U0 (clk, rst_n, a, b);
 
   initial begin
-    $dumpfile("mod_q.vcd");
-    $dumpvars(0, mod_q_tb);
-    
     clk = 0;
     rst_n = 0;
     a = 0;
@@ -18,6 +18,12 @@ module mod_q_tb #(parameter N = 256);
   always #10 clk = ~clk;
 
   initial begin
+    $display();
+    $display("TB: Mod q module\n###########################################");
+    
+    $dumpfile("mod_q.vcd");
+    $dumpvars(0, mod_q_tb);
+
     $monitor("%t: \n rst_n: %d \n a: %h \n b: %h \n", $time, rst_n, a, b);
 
     #10;
