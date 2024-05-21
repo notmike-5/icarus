@@ -4,6 +4,17 @@ module add256 ();
 endmodule // add256
 
 
+module half_adder
+  (
+    input  a, b,
+    output sum, cout
+   );
+  
+  assign sum = a ^ b;
+  assign cout = a & b;
+endmodule
+
+
 module full_adder
   (
     input	a, b, cin,
@@ -31,10 +42,10 @@ endmodule // full_subtractor
 //  - adds propogation delay that can compound
 module rca_add #(parameter N = 256)
   (
-   input [N-1:0]  a, b,
-   input	  cin,
-   output [N-1:0] sum,
-   output	  cout	  
+    input [N-1:0]  a, b,
+    input	   cin,
+    output [N-1:0] sum,
+    output cout	  
    );
 
   wire [N:0] C;
@@ -50,6 +61,23 @@ module rca_add #(parameter N = 256)
 endmodule // rca_add
 
 
+// Adder-Subtractor (Ripple-Carry based)
+//  - uses ctrl signal to select add or subtract
+module add_sub #(parameter N = 256)
+  (
+    input	   ctrl,
+    input [N-1:0]  a, b,
+    output [N-1:0] sum,
+    output cout
+   );
+
+  wire [N-1:0] bmod;
+  assign bmod = {N{ctrl}} ^ b;
+
+  rca_add #(.N(N)) rca0 (.a(a), .b(bmod), .cin(ctrl), .sum(sum), .cout(cout));
+endmodule
+
+
 // Carry-Lookahead Adder
 //  - reduces carry propegation delay
 //  - costs larger footprint and more complex hardware
@@ -58,7 +86,7 @@ module cla_add #(parameter N = 256)
     input [N-1:0]	a, b,
     input		cin,
     output wire [N-1:0]	sum,
-    output wire		cout
+    output wire	cout
    );
 
   wire [N:0] C;
@@ -90,18 +118,26 @@ module cla_add #(parameter N = 256)
 endmodule // cla_add
 
 
-// Adder-Subtractor (Ripple-Carry based)
-//  - uses ctrl signal to select add or subtract
-module add_sub #(parameter N = 256)
+// Carry-Save Adder (3-input)
+module csa #(parameter N = 260)
   (
-    input	   ctrl,
-    input [N-1:0]  a, b,
-    output [N-1:0] sum,
-    output	   cout
+    input [N-1:0] a, b, c,
+    input	 cin,
+    output [N:0] sum,
+    output cout
    );
 
-  wire [N-1:0] bmod;
-  assign bmod = {N{ctrl}} ^ b;
+  wire [N-1:0] co, S;
+  
+  genvar       ii;
+  generate
+    for (ii = 0; ii < N; ii++)
+      full_adder csa (.a(a[ii]), .b(b[ii]), .cin(c[ii]), 
+		      .sum(S[ii]), .cout(co[ii]));
+  endgenerate
 
-  rca_add #(.N(N)) rca0 (.a(a), .b(bmod), .cin(ctrl), .sum(sum), .cout(cout));
-endmodule
+  rca_add #(.N(N)) rca (.a({1'b0, S[N-1:1]}), .b(co), .cin(1'b0), 
+			.sum(sum[N:1]), .cout(cout));
+
+  assign sum[0] = S[0];
+endmodule  
