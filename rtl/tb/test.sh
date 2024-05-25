@@ -8,7 +8,7 @@ iverilog -g2005-sv -o add_sub_tb add_sub_tb.sv ../add256.sv
 
 iverilog -g2005-sv -o mult_tb mult_tb.sv ../mult256.sv
 iverilog -g2005-sv -o divu_tb divu_tb.sv ../divu256.sv
-iverilog -g2005-sv -o mod_q_tb mod_q_tb.sv ../mod_q.sv ../divu256.sv
+iverilog -g2005-sv -o mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu256.sv
 
 #printf "$?" # check success at each stage and only run successful testbenches?
 
@@ -26,4 +26,4 @@ iverilog -g2005-sv -o mod_q_tb mod_q_tb.sv ../mod_q.sv ../divu256.sv
 #./divu_tb
 
 # mod_q.sv
-#./mod_q_tb
+./mod_p_tb

@@ -19,22 +19,42 @@ module mod_p_tb #(parameter N = 256);
 
   initial begin
     $display();
-    $display("TB: Mod p module\n ###########################################");
+    $display("TB: Sequential divider-based (mod p) module\n###########################################");
     
     $dumpfile("waves/mod_p.vcd");
     $dumpvars(0, mod_p_tb);
 
-    $monitor("%t:\n rst_n: %b\n n: %h\n mod p: %h \n", $time, rst_n, n, rem);
+    $monitor("%t:\n n: 0x%h\n mod p:\n%d \n", $time, n, rem);
 
-    #10;
-    n = 256'd5_000_000;
+    // Test 1 - Some number already smaller than p.
+    //      n: 7,000,000
+    //  mod p: 7,000,000
+    n = 256'd7_000_000;
     #1; rst_n = 1;
 
-    #100000; rst_n = 0; #1;
+    // Test 2 - A number somewhat larger than p.
+    //      n: 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    //  mod p: 37
+    #15000; rst_n = 0;
     n = {256{1'b1}};
     #1; rst_n = 1;
 
-    #100000; rst_n = 0;
+    // Test 3: Some random number
+    //         n: 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+    //     mod p: 42824390107717648298672532335567665951483711071615920846369630979332844142338
+    //  (or) hex: 0x5eadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbf02
+    #15000; rst_n = 0;
+    n = {8{32'hDEADBEEF}};   
+    #1; rst_n = 1;
+
+    // Test 4: p mod p = 0
+    //      n:  0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed
+    //  mod p:  0
+    #15000; rst_n = 0;
+    n = 256'h7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed;
+    #1; rst_n = 1;
+        
+    #1000; rst_n = 0; #1;
     
     $finish;
   end
