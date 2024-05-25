@@ -4,6 +4,7 @@
 **/waves
 **/.vcd
 **/work
+rtl/tb/*_tb
 docs/
 img/
 rtl/EdDSA
