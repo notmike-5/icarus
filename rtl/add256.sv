@@ -122,7 +122,6 @@ endmodule // cla_add
 module csa #(parameter N = 260)
   (
     input [N-1:0] a, b, c,
-    input	 cin,
     output [N:0] sum,
     output cout
    );

@@ -6,7 +6,7 @@ module csa_tb #(parameter N = 5) ();
   wire [N:0]  sum;
   wire	      cout;
 
-  csa #(.N(N)) csa0 (.a(a), .b(b), .c(c), .cin(cin), .sum(sum), .cout(cout));
+  csa #(.N(N)) csa0 (.a(a), .b(b), .c(c), .sum(sum), .cout(cout));
 
   initial 
     begin
