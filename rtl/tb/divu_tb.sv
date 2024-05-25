@@ -26,7 +26,7 @@ module divu_tb #(parameter N = 256) ();
     $display();
     $display("TB: %d-bit Divider (Sequential)\n###########################################", N);
     
-    $dumpfile("divu256.vcd");
+    $dumpfile("waves/divu256.vcd");
     $dumpvars(0, divu_tb);
 
     $monitor("%t: state: %d \ndata_rdy: %b \ndbz: %b \nval: %h \nrem: %h", $time, state, data_rdy, dbz, val, rem);
