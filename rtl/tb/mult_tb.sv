@@ -10,7 +10,7 @@ module mult_tb #(parameter N = 256) ();
   wire [2*N-1:0] acc;
   wire [1:0]	 state;
   
-  mult256 U0 (clk, rst, a, b, prod, acc, data_rdy, state);
+  seq_mult U0 (clk, rst, a, b, prod, acc, data_rdy, state);
 
   initial 
     begin

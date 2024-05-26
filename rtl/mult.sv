@@ -1,6 +1,6 @@
 // Sequential, N-bit x N-bit multiplier
-
-module mult256 #(parameter N = 256)
+//  - Shift-and-Add-based
+module seq_mult #(parameter N = 256)
   (
    input wire		  clk,
    input wire		  rst,
@@ -82,4 +82,4 @@ module mult256 #(parameter N = 256)
 	  end
 	endcase
     end // acc_prod
-endmodule // mult256
+endmodule // mult

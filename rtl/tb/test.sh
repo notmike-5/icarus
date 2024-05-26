@@ -9,7 +9,7 @@ iverilog -g2005-sv -o csa_tb csa_tb.sv ../add256.sv
 
 iverilog -g2005-sv -o add_sub_tb add_sub_tb.sv ../add256.sv 
 
-iverilog -g2005-sv -o mult_tb mult_tb.sv ../mult256.sv
+iverilog -g2005-sv -o mult_tb mult_tb.sv ../mult.sv
 iverilog -g2005-sv -o divu_tb divu_tb.sv ../divu256.sv
 iverilog -g2005-sv -o mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu256.sv
 
@@ -23,7 +23,7 @@ iverilog -g2005-sv -o mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu256.sv
 ./csa_tb
 ./add_sub_tb
 
-# mult256.sv
+# mult.sv
 #./mult_tb
 
 # divu256.sv

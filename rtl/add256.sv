@@ -119,7 +119,7 @@ endmodule // cla_add
 
 
 // Carry-Save Adder (3-input)
-module csa #(parameter N = 260)
+module csa #(parameter N = 256)
   (
     input [N-1:0] a, b, c,
     output [N:0] sum,
