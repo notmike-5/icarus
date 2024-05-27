@@ -7,7 +7,7 @@ module reduce_tb #(parameter N = 255);
   reg [N-1:0] r;
   
   reduce U0 (n, r);
-
+	
   initial begin
     $display();
     $display("TB: Quick Reduction Module\n ###########################################");
@@ -16,7 +16,8 @@ module reduce_tb #(parameter N = 255);
     $dumpvars(0, reduce_tb);
 
     $monitor("%t:\n n: %d\n r: %d", $time, n, r);
-
+    
+    n = 0;
     #10;
     n = 2;  // a number smaller than p
     #100;

@@ -16,6 +16,7 @@ iverilog -g2005-sv -o add_sub_tb add_sub_tb.sv ../add.sv
 iverilog -g2005-sv -o mult_tb mult_tb.sv ../mult.sv
 iverilog -g2005-sv -o divu_tb divu_tb.sv ../divu.sv
 iverilog -g2005-sv -o mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu.sv
+iverilog -g2005-sv -o reduce_tb reduce_tb.sv ../reduce.sv ../add.sv
 
 # TODO: check success at each stage and only run successful testbenches?
 echo 'Build complete.'
@@ -47,3 +48,6 @@ fi
 
 # mod_p.sv
 ./mod_p_tb
+
+# reduce.sv
+./reduce_tb
