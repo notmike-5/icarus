@@ -1,9 +1,5 @@
 // Adder/Subtractor Modules
 
-module add256 ();
-endmodule // add256
-
-
 module half_adder
   (
     input  a, b,
