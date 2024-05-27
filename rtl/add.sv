@@ -12,7 +12,7 @@ module half_adder
   
   assign sum = a ^ b;
   assign cout = a & b;
-endmodule
+endmodule // half_adder
 
 
 module full_adder
@@ -24,6 +24,17 @@ module full_adder
   assign sum = a ^ b ^ cin;
   assign cout = (a & b) | (a ^ b) & cin;
 endmodule // full_adder
+
+
+module half_subtractor
+  (
+   input a, b,
+   output diff, bout
+   );
+
+  assign diff = a ^ b;
+  assign bout = ~a & b;
+endmodule // half_subtractor
 
 
 module full_subtractor
@@ -38,7 +49,7 @@ endmodule // full_subtractor
 
 
 // Ripple-Carry Adder (Parallel Adder)
-//  - smaller footprint
+//  - smaller footprint, less complex
 //  - adds propogation delay that can compound
 module rca_add #(parameter N = 256)
   (
@@ -59,23 +70,6 @@ module rca_add #(parameter N = 256)
   
   assign cout = C[N-1];
 endmodule // rca_add
-
-
-// Adder-Subtractor (Ripple-Carry based)
-//  - uses ctrl signal to select add or subtract
-module add_sub #(parameter N = 256)
-  (
-    input	   ctrl,
-    input [N-1:0]  a, b,
-    output [N-1:0] sum,
-    output cout
-   );
-
-  wire [N-1:0] bmod;
-  assign bmod = {N{ctrl}} ^ b;
-
-  rca_add #(.N(N)) rca0 (.a(a), .b(bmod), .cin(ctrl), .sum(sum), .cout(cout));
-endmodule
 
 
 // Carry-Lookahead Adder
@@ -101,21 +95,53 @@ module cla_add #(parameter N = 256)
       full_adder FA (.a(a[ii]), .b(b[ii]), .cin(C[ii]), .sum(S[ii]), .cout());
   endgenerate
 
-  // (G)enerate  Gi = Ai * Bi
-  // (P)ropogate Pi = A + B
-  // (C)arry     Ci = Gi + [Pi * C_i-1]
   genvar jj;
   generate
     for (jj = 0; jj < N; jj++) begin
-      assign G[jj] = a[jj] & b[jj];
-      assign P[jj] = a[jj] | b[jj];
-      assign C[jj+1] = G[jj] | (P[jj] & C[jj]);
+      assign G[jj] = a[jj] & b[jj];              // (G)enerate  Gi = Ai * Bi
+      assign P[jj] = a[jj] | b[jj];              // (P)ropogate Pi = A + B
+      assign C[jj+1] = G[jj] | (P[jj] & C[jj]);  // (C)arry     Ci = Gi + [Pi * C_i-1]
     end
   endgenerate
 
   assign sum = S;
   assign cout = C[N];
 endmodule // cla_add
+
+
+// Adder-Subtractor (Ripple-Carry based)
+//  - uses ctrl signal to select add or subtract
+module add_sub_rc #(parameter N = 256)
+  (
+   input	  ctrl,
+   input [N-1:0]  a, b,
+   output [N-1:0] sum,
+   output	  cout
+   );
+  
+  wire [N-1:0] bmod;
+  assign bmod = {N{ctrl}} ^ b;
+  
+  rca_add #(.N(N)) rca0 (.a(a), .b(bmod), .cin(ctrl), .sum(sum), .cout(cout));
+endmodule // add_sub_rc
+
+
+// Adder-subtractor (Carry-Lookahead based)
+//  - uses ctrl signal to select add or subtract
+//  - faster than Ripple-carry based but larger footprint, more complex
+module add_sub #(parameter N = 256)
+  (
+   input	  ctrl,
+   input [N-1:0]  a, b,
+   output [N-1:0] sum,
+   output	  cout
+   );
+
+  wire [N-1:0] bmod;
+  assign bmod = {N{ctrl}} ^ b;
+
+  cla_add #(.N(N)) cla0 (.a(a), .b(bmod), .cin(ctrl), .sum(sum), .cout(cout));
+endmodule // add_sub
 
 
 // Carry-Save Adder (3-input)
