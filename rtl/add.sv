@@ -140,6 +140,61 @@ module add_sub #(parameter N = 256)
 endmodule // add_sub
 
 
+//TODO: combine Adder and Subtractor modulo p.
+// Adder modulo p = 2^255 - 19
+module add_modp #(parameter N = 255)
+  (
+   input [N-1:0]  x, y,
+   output [N-1:0] sum
+   );
+  
+  wire [N-1:0] p = 2**255 - 19;
+  
+  wire [N:0]   r0, r1, r2;
+  wire [N-1:0] s0; 
+  wire	       c0;
+  
+  add_sub #(.N(N)) add0 (.ctrl(1'b0), .a(x), .b(y), .sum(s0), .cout(c0));
+
+  // Case 1: 0 <= r0 < p
+  assign r0 = {c0, s0};
+  
+  // Case 2: r0 >= p
+  add_sub #(.N(N+1)) sub0 (.ctrl(1'b1), .a(r0), .b({1'b0, p}), .sum(r1), .cout());
+  
+  // Case 3: r1 = (r0 - p) >= p
+  add_sub #(.N(N+1)) sub1 (.ctrl(1'b1), .a(r1), .b({1'b0, p}), .sum(r2), .cout());
+  
+  assign sum = (0 <= r0) && (r0 < p) ? r0 :
+		    (0 <= r1) && (r1 < p) ? r1 :
+		    (0 <= r2) && (r2 < p) ? r2 : {N{1'b0}};
+endmodule 
+
+
+// Subtractor modulo p = 2^255 - 19
+// - there is a heavy assumption made here
+//   that a, b ∈ [0, p − 1]. All bets are off otherwise.
+module sub_modp #(parameter N = 255)
+  (
+   input [N-1:0]  x, y,
+   output [N-1:0] diff
+   );
+  
+  wire [N-1:0] p = 2**255 - 19;
+  
+  wire [N-1:0] r0, r1;
+  wire	       b0, b1;	       
+  
+  // Case 1: 0 <= r0 < p
+  add_sub #(.N(N)) sub0 (.ctrl(1'b1), .a(x), .b(y), .sum(r0), .cout(b0));
+  
+  // Case 2: r0 < 0  -->  r1 = p - r0
+  add_sub #(.N(N)) sub1 (.ctrl(1'b0), .a(r0), .b(p), .sum(r1), .cout(b1));
+
+  assign diff = b0 ? r0 : r1;
+endmodule
+
+
 // Carry-Save Adder (3-input)
 module csa #(parameter N = 256)
   (
