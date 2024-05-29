@@ -12,6 +12,8 @@ iverilog -g2005-sv -o cla_tb cla_tb.sv ../add.sv
 iverilog -g2005-sv -o csa_tb csa_tb.sv ../add.sv
 
 iverilog -g2005-sv -o add_sub_tb add_sub_tb.sv ../add.sv 
+iverilog -g2005-sv -o add_modp_tb add_modp_tb.sv ../add.sv
+iverilog -g2005-sv -o sub_modp_tb sub_modp_tb.sv ../add.sv
 
 iverilog -g2005-sv -o mult_tb mult_tb.sv ../mult.sv
 iverilog -g2005-sv -o divu_tb divu_tb.sv ../divu.sv
@@ -39,6 +41,8 @@ fi
 ./cla_tb
 ./csa_tb
 ./add_sub_tb
+./add_modp_tb 
+./sub_modp_tb 
 
 # mult.sv
 ./mult_tb
