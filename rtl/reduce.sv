@@ -1,5 +1,6 @@
-// reduction module
+// reduction modules modulo p = 2^255 - 19 
 
+// fast reduction modulo p of a 510-bit product ab
 module reduce #(parameter N = 255)
   (
    input [2*N-1:0] n,  // 510-bit product,   ab = a x b
@@ -37,7 +38,7 @@ module reduce #(parameter N = 255)
   
   assign r0 = c3 ? {c3, s3} : {s3};  // r0 < 2 * p
   
-  add_sub addsub0 (.ctrl(1'b1), .a(r0), .b(p), .sum(r1), .cout());  // r1 < p
+  add_sub addsub0 (.ctrl(1'b1), .a(r0), .b(p), .sum(r1), .cout()); // r1 < p
   
   assign r = (r0 > p) ? r1 : r0;
 endmodule

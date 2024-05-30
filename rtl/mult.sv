@@ -83,3 +83,21 @@ module seq_mult #(parameter N = 256)
 	endcase
     end // acc_prod
 endmodule // mult
+
+
+// multiplication modulo p = 2^255 - 19
+module mult_modp #(parameter N = 255)
+  (
+   input	  clk, rst_n,
+   input [N-1:0]  x, y,
+   output [N-1:0] prod,
+   output	  dr
+   );
+
+  wire [2*N-1:0] p;
+  
+  seq_mult #(.N(N)) mult0 (.clk(clk), .rst(rst_n), .a(x), .b(y),
+			   .prod(p), .acc(), .data_rdy(dr), .state());
+
+  reduce redc0 (.n(p), .r(prod));
+  endmodule
