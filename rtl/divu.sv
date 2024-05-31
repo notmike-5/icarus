@@ -76,4 +76,4 @@ module divu256 #(parameter N = 256)
   end else
     {val, rem} <= {val, rem};
  end // val_rem
-endmodule // divu255
+endmodule // divu256
