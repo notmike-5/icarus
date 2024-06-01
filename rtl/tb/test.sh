@@ -25,6 +25,8 @@ $BUILD_CMD reduce_tb reduce_tb.sv ../reduce.sv ../add.sv
 $BUILD_CMD mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu.sv
 $BUILD_CMD mult_modp_tb mult_modp_tb.sv ../mult.sv ../add.sv ../reduce.sv
 
+$BUILD_CMD priority_encode_tb priority_encode_tb.sv ../encode.sv
+
 echo 'Build complete.\n'
 
 read -s -n 1 -t 5 -p $'Continue...?\n'
@@ -60,3 +62,6 @@ fi
 
 # reduce.sv
 ./reduce_tb
+
+# encode.sv
+./priority_encode_tb
