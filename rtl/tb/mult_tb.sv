@@ -6,11 +6,11 @@ module mult_tb #(parameter N = 256) ();
   reg          clk, rst_n;
   reg [N-1:0]  a, b;
   wire	       data_rdy;
+  
   wire [2*N-1:0] prod;
   wire [2*N-1:0] acc;
-  wire [1:0]	 state;
   
-  seq_mult U0 (clk, rst_n, a, b, prod, acc, data_rdy, state);
+  seq_mult U0 (clk, rst_n, a, b, prod, acc, data_rdy);
 
   initial 
     begin
@@ -40,7 +40,7 @@ module mult_tb #(parameter N = 256) ();
     rst_n = 1;
     $display("\n%t:\t Multiply %d x %d\n", $time, 4'(a), 4'(b));
     
-    #5120;
+    #5150;
     
     //assert property(2+2==1);
 
@@ -51,7 +51,7 @@ module mult_tb #(parameter N = 256) ();
     b = 256'h2;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
 
-    #5120;
+    #5150;
     
     // TEST 3: 0xc000000000000000000000000000000000000000000000000000000000000000  x  2
     //       = (hex: 0x1800000000000000000000000000000000000000000000000000000000000000)
@@ -61,7 +61,7 @@ module mult_tb #(parameter N = 256) ();
 //    rst_n = 1;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
     
-    #5120;
+    #5150;
     
     // TEST 4: 0x8000000000000000000000000000000000000000000000000000000000000000  x  2
     //       = (hex: 0x10000000000000000000000000000000000000000000000000000000000000000)
@@ -71,7 +71,7 @@ module mult_tb #(parameter N = 256) ();
 //    rst_n = 1;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
     
-    #5120;
+    #5150;
     
     // TEST 5: 256’f x 256’f
     //       = (hex: 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0000000000000000000000000000000000000000000000000000000000000001)
@@ -81,7 +81,7 @@ module mult_tb #(parameter N = 256) ();
 //    rst_n = 1;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
     
-    #5120;
+    #5150;
 
     #1000;
     $display("%t:\t Reset...\n", $time);
@@ -93,12 +93,12 @@ module mult_tb #(parameter N = 256) ();
     a = 3;
     b = 4; 
     $display("\n%t:\t Multiply %d x %d\n", $time, 4'(a), 4'(b));
-    rst_n = 1; #2500;
+    rst_n = 1; #40;
 
     $display("\n%t:\t Multiplication interrupted.", $time); #10;
     a = 256'hDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF;
     b = '1; 
-    $display("\n%t:\t Multiply %h x %h\n", $time, a, b); #5120;
+    $display("\n%t:\t Multiply %h x %h\n", $time, a, b); #5150;
 
     #100;
     $finish;

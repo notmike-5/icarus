@@ -18,12 +18,12 @@ $BUILD_CMD add_sub_tb add_sub_tb.sv ../add.sv
 $BUILD_CMD add_modp_tb add_modp_tb.sv ../add.sv
 $BUILD_CMD sub_modp_tb sub_modp_tb.sv ../add.sv
 	
-$BUILD_CMD mult_tb mult_tb.sv ../mult.sv ../add.sv ../reduce.sv
+$BUILD_CMD mult_tb mult_tb.sv ../mult.sv ../add.sv ../reduce.sv ../encode.sv
 $BUILD_CMD divu_tb divu_tb.sv ../divu.sv
 	
 $BUILD_CMD reduce_tb reduce_tb.sv ../reduce.sv ../add.sv
 $BUILD_CMD mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu.sv
-$BUILD_CMD mult_modp_tb mult_modp_tb.sv ../mult.sv ../add.sv ../reduce.sv
+$BUILD_CMD mult_modp_tb mult_modp_tb.sv ../mult.sv ../add.sv ../reduce.sv ../encode.sv
 
 $BUILD_CMD priority_encode_tb priority_encode_tb.sv ../encode.sv
 
