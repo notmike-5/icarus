@@ -3,18 +3,19 @@
 // Testbench: Sequential, N-bit x N-bit Multiplier
 
 module mult_tb #(parameter N = 256) ();
-  reg          clk, rst_n;
+  reg          clk, en, rst_n;
   reg [N-1:0]  a, b;
   wire	       data_rdy;
   
   wire [2*N-1:0] prod;
   wire [2*N-1:0] acc;
   
-  seq_mult U0 (clk, rst_n, a, b, prod, acc, data_rdy);
+  seq_mult U0 (clk, en, rst_n, a, b, prod, acc, data_rdy);
 
   initial 
     begin
       clk = 0;
+      en = 0;
       rst_n = 0;
       a = 0;
       b = 0;
@@ -35,6 +36,7 @@ module mult_tb #(parameter N = 256) ();
     // TEST 1: 5 x 12 
     //       = 60 (hex: 0x3c)
     #10;
+    en = 1;
     a = 5;
     b = 12;
     rst_n = 1;

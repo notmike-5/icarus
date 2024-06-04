@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 # TODO: check success at each stage and only run successful testbenches?
 
+if [ ! -d waves/ ]; then
+  mkdir ./waves/
+fi
+
 BUILD_CMD='iverilog -g2005-sv -o'
 echo "Initiating build..."
 
@@ -29,7 +33,7 @@ $BUILD_CMD priority_encode_tb priority_encode_tb.sv ../encode.sv
 
 echo 'Build complete.\n'
 
-read -s -n 1 -t 5 -p $'Continue...?\n'
+read -s -n 1 -t 5 -p $'\nContinue...?\n'
  
 if [ $? -eq 0 ]; then
     echo "Initiating Tests..."
@@ -53,6 +57,7 @@ fi
 # mult.sv
 ./mult_tb
 ./mult_modp_tb 
+./mod_exp_tb
 
 # divu.sv
 ./divu_tb

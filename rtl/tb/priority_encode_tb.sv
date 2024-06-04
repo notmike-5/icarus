@@ -25,16 +25,14 @@ module priority_encode_tb #(parameter N = 255) ();
     
     $monitor("%t:\n n: %b, i: %d", $time, n, i);
     
-    #1; en = 1;         // z
-    n = '0; #1;         // 0
-    n = 255'hF; #1;     // 3
-    n = 255'hFF; #1;    // 7
-    n = 255'hFFF; #1;   // 11
-    n = 255'hFFFF; #1;  // 15
-    n = 255'hFFFFF; #1; // 19
-    n = '1; #1;         // 254
-    
-    #1; en = 0; #1      // z
+    #1; en = 1;                            // z
+    n = '0; #1;                            // 0
+    n = { {7{32'h0}}, {1{32'hFFFFFFFF}} }; #1; // 31  
+    n = { {6{32'h0}}, {2{32'hFFFFFFFF}} }; #1; // 63
+    n = { {4{32'h0}}, {4{32'hFFFFFFFF}} }; #1; // 127
+    n = { {1{32'h0}}, {6{32'hFFFFFFFF}} }; #1; // 191
+    n = '1;                                    // 254  
+    #1; en = 0; #1;                        // z
     $finish;
   end
 endmodule

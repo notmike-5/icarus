@@ -3,16 +3,18 @@
 // Testbench: 255-bit x 255-bit Multiplier modulo p
 
 module mult_modp_tb #(parameter N = 255) ();
-  reg            clk, rst_n;
+  reg            clk, en; 
+  reg		 rst_n;
   reg  [N-1:0]	 x, y;
   wire [N-1:0]	 prod;
   wire		 data_rdy;
   
-  mult_modp mult_mp0 (clk, rst_n, x, y, prod, data_rdy);
+  mult_modp mult_mp0 (clk, en, rst_n, x, y, prod, data_rdy);
 
   initial 
     begin
       clk = 0;
+      en = 0;
       rst_n = 0;
       x = 0; y = 0;
     end
@@ -34,6 +36,7 @@ module mult_modp_tb #(parameter N = 255) ();
     x = 5;
     y = 12;
     rst_n = 1;
+    en = 1;
     $display("\n%t:\t Multiply %d x %d\n", $time, 4'(x), 4'(y));
     
     #5120;
