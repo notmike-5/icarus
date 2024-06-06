@@ -119,7 +119,7 @@ def proj_add(x1, y1, z1, t1, x2, y2, z2, t2):
     H = B + A
 
     if debug:
-        print("\nProjective addition of")
+        print("\nProjective addition of...\n")
         # Point 1
         print(f"P1: ({hex(x1)},{hex(y1)},{hex(z1)},{hex(t1)})")
         print("x1:", hex(x1))
@@ -149,7 +149,7 @@ def proj_add(x1, y1, z1, t1, x2, y2, z2, t2):
         print(f"G = D + C : { hex(G) }")
         print(f"H = B + A : { hex(H) }")
         #Result
-        print(f"Result : ({ hex(E*F) }, { hex(E*F) }, { hex(E*F) }, { hex(E*F) })")
+        print(f"\nResult : ({ hex(E*F) }, { hex(E*F) }, { hex(E*F) }, { hex(E*F) })")
 
     return (E*F, G*H, F*G, E*H)
 
@@ -165,25 +165,26 @@ def proj_dbl(x, y, z, t):
     F = C + G
 
     if debug:
-        print("\nProjective doubling of")
+        print("\nProjective doubling of...\n")
         # Point
-        print(f"Point: ({bitlen(x)}, {bitlen(y)}, {bitlen(z)}, {bitlen(t)})")
+        print(f"Point: ({ hex(x) }, { hex(y) }, { hex(z) }, { hex(t) })")
         print(f"x: {x}")
         print(f"y: {y}")
         print(f"z: {z}")
         print(f"t: {t}\n")
         # A,B,C,H,E,G,F
-        print(f"A = x^2 : { bitlen(x**2) }")
-        print(f"B = y^2 : { bitlen(y**2) }")
-        print(f"C =  : { bitlen(2 * z**2) }")
-        print(f"H =  : { bitlen(A + B) }")
-        print(f"E =  : { bitlen(H - (x + y)**2) }")
-        print(f"G = A - B : { bitlen(A - B) }")
-        print(f"F =  : { bitlen(C + G) }")
+        print(f"A = x^2 : { hex(x**2) }")
+        print(f"B = y^2 : { hex(y**2) }")
+        print(f"C =  : { hex(2 * z**2) }")
+        print(f"H =  : { hex(A + B) }")
+        print(f"E =  : { hex(H - (x + y)**2) }")
+        print(f"G = A - B : { hex(A - B) }")
+        print(f"F =  : { hex(C + G) }")
         #Result
-        print(f"Result : ({bitlen(E*F)}, {bitlen(G*H)}, {bitlen(F*G)}, {bitlen(E*H)})")
+        print(f"\nResult : ({ hex(E*F) }, { hex(G*H) }, { hex(F*G) }, { hex(E*H) })")
 
     return (E*F, G*H, F*G, E*H)
+
 
 # compute Q = kQ
 def mult(k, P):
@@ -243,11 +244,8 @@ assert add(0, -1, 0, -1) == (0, 1)
 assert dbl(0, -1) == (0, 1)
 
 ## Test - compute 2G from G using proj_dbl
-n = to_affine(*proj_add(*G, *G))
-
-
-#assert to_affine(*proj_dbl(*G)) == twoG
+assert to_affine(*proj_add(*G, *G)) == to_affine(*proj_dbl(*G)) == twoG
 
 ## Test - compute 5G from twoG using proj_dbl and proj_add
-#twoG = to_proj(*twoG)
-#assert to_affine(*proj_add(*G, *proj_dbl(*twoG))) == fiveG
+twoG = to_proj(*twoG)
+assert to_affine(*proj_add(*G, *proj_dbl(*twoG))) == fiveG

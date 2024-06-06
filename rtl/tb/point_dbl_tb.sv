@@ -59,6 +59,20 @@ module point_dbl_tb #(parameter N = 255) ();
     Px = Gx; Py = Gy; Pz = Gz; Pt = Gt;
     en = 1; #20; en = 0;
     
+    #15500;
+
+    // Test 2: 4G
+    // Extended (projective) coordinates
+    // (x, y, z, t)
+    //
+    // Affine coordinates
+    // 
+    Px = 255'h3b6f8891960f6ad45776d1e1213c1bd9de44f888163a76921515e6cf9f3fd67e;
+    Py = 255'h336d9ece4cdb30925921f40f14dab827d6e156675107378db6d34c9a874a007e; 
+    Pz = 255'h59e4ea1a52a20ea2fd9cb81712f675b450b27bff31b598ba722d5b0bf61c8608;
+    Pt = 255'h1f6e08da2d298daafc6ea6fedd5e07c172749500483d139bc532c7e392cad989;
+    en = 1; #20; en = 0;
+    
     #17500;
     $finish;
   end
