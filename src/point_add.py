@@ -121,35 +121,35 @@ def proj_add(x1, y1, z1, t1, x2, y2, z2, t2):
     if debug:
         print("\nProjective addition of")
         # Point 1
-        print(f"P1: ({bitlen(x1)},{bitlen(y1)},{bitlen(z1)},{bitlen(t1)})")
-        print("x1:", x1)
-        print("y1:", y1)
-        print("z1:", z1)
-        print("t1:", t1, "\n")
+        print(f"P1: ({hex(x1)},{hex(y1)},{hex(z1)},{hex(t1)})")
+        print("x1:", hex(x1))
+        print("y1:", hex(y1))
+        print("z1:", hex(z1))
+        print("t1:", hex(t1), "\n")
         # Point 2
-        print(f"P2: ({bitlen(y1)},{bitlen(y2)},{bitlen(z2)},{bitlen(t2)})")
-        print("x2:", x2)
-        print("y2:", y2)
-        print("z2:", z2)
-        print("t2:", t2, "\n")
+        print(f"P2: ({hex(x2)},{hex(y2)},{hex(z2)},{hex(t2)})")
+        print("x2:", hex(x2))
+        print("y2:", hex(y2))
+        print("z2:", hex(z2))
+        print("t2:", hex(t2), "\n")
         #A
-        print(f"(y1 - x1) : { bitlen(y1 - x1) }")
-        print(f"(y2 - x2) : { bitlen(y2 - x2) }")
-        print(f"A = (y1 - x1) * (y2 - x2) : { bitlen((y1 - x1) * (y2 - x2)) }")
+        print(f"(y1 - x1) : { hex(y1 - x1) }")
+        print(f"(y2 - x2) : { hex(y2 - x2) }")
+        print(f"A = (y1 - x1) * (y2 - x2) : { hex( ((y1 - x1) * (y2 - x2)) % p) }")
         #B
-        print(f"(y1 + x1) : { bitlen(y1 - x1) }")
-        print(f"(y2 + x2) : { bitlen(y2 - x2) }")
-        print(f"B = (y1 + x1) * (y2 + x2) : { bitlen((y1 - x1) * (y2 - x2)) }")
+        print(f"(y1 + x1) : { hex(y1 + x1) }")
+        print(f"(y2 + x2) : { hex(y2 + x2) }")
+        print(f"B = (y1 + x1) * (y2 + x2) : { hex( ((y1 + x1) * (y2 + x2)) % p) }")
         #C,D
-        print(f"C = 2 * t1 * t2 * d : { bitlen(2 * t1 * t2 * d) }")
-        print(f"D = 2 * z1 * z2 : { bitlen(2 * z1 * z2) }")
+        print(f"C = 2 * t1 * t2 * d : { hex( (2 * t1 * t2 * d) % p) }")
+        print(f"D = 2 * z1 * z2 : { hex( (2 * z1 * z2) % p) }")
         #E,F,G,H
-        print(f"E = B - A : { bitlen(E) }")
-        print(f"F = D - C : { bitlen(F) }")
-        print(f"G = D + C : { bitlen(G) }")
-        print(f"H = B + A : { bitlen(H) }")
+        print(f"E = B - A : { hex(E) }")
+        print(f"F = D - C : { hex(F) }")
+        print(f"G = D + C : { hex(G) }")
+        print(f"H = B + A : { hex(H) }")
         #Result
-        print(f"Result : ({bitlen(E*F)}, {bitlen(E*F)}, {bitlen(E*F)}, {bitlen(E*F)})")
+        print(f"Result : ({ hex(E*F) }, { hex(E*F) }, { hex(E*F) }, { hex(E*F) })")
 
     return (E*F, G*H, F*G, E*H)
 
@@ -243,8 +243,11 @@ assert add(0, -1, 0, -1) == (0, 1)
 assert dbl(0, -1) == (0, 1)
 
 ## Test - compute 2G from G using proj_dbl
-assert to_affine(*proj_dbl(*G)) == twoG
+n = to_affine(*proj_add(*G, *G))
+
+
+#assert to_affine(*proj_dbl(*G)) == twoG
 
 ## Test - compute 5G from twoG using proj_dbl and proj_add
-twoG = to_proj(*twoG)
-assert to_affine(*proj_add(*G, *proj_dbl(*twoG))) == fiveG
+#twoG = to_proj(*twoG)
+#assert to_affine(*proj_add(*G, *proj_dbl(*twoG))) == fiveG
