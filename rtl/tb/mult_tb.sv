@@ -29,28 +29,29 @@ module mult_tb #(parameter N = 256) ();
 
     $dumpfile("waves/mult256.vcd");
     $dumpvars(0, mult_tb);
+    
+    $monitor("%t:\t\tprod: %h", $time, prod);
 
     $display("%t:\t Reset...\n", $time);
-    $monitor("%t:\t\tprod: %h", $time, prod);
+    #10; rst_n = 1;
     
     // TEST 1: 5 x 12 
     //       = 60 (hex: 0x3c)
-    #10;
-    en = 1;
     a = 5;
     b = 12;
-    rst_n = 1;
+    en = 1; #20; en = 0;
     $display("\n%t:\t Multiply %d x %d\n", $time, 4'(a), 4'(b));
     
     #5150;
     
-    //assert property(2+2==1);
+    //assert property(2+2==1); // TODO: add some assertions to testbenches
 
     // TEST 2: 256’f x 2 
     //       = (hex:  0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe)
     #100;
     a = '1;
     b = 256'h2;
+    en = 1; #20; en = 0;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
 
     #5150;
@@ -60,7 +61,7 @@ module mult_tb #(parameter N = 256) ();
     #100;
     a = 256'h2;
     b = {4'hc, 252'h0};
-//    rst_n = 1;
+    en = 1; #20; en = 0;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
     
     #5150;
@@ -70,7 +71,7 @@ module mult_tb #(parameter N = 256) ();
     #100;
     a = {4'h8, 252'h0};
     b = 256'h2;
-//    rst_n = 1;
+    en = 1; #20; en = 0;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
     
     #5150;
@@ -80,26 +81,17 @@ module mult_tb #(parameter N = 256) ();
     #100;
     a = '1;
     b = '1;
-//    rst_n = 1;
+    en = 1; #20; en = 0;
     $display("\n%t:\t Multipy %h x %h\n", $time, a, b);
     
     #5150;
-
-    #1000;
-    $display("%t:\t Reset...\n", $time);
-    rst_n = 0;
-    #1000;
     
     // TEST 6: interrupt multiplication
     //       = (hex: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeee2152411021524110215241102152411021524110215241102152411021524111)
-    a = 3;
-    b = 4; 
-    $display("\n%t:\t Multiply %d x %d\n", $time, 4'(a), 4'(b));
-    rst_n = 1; #40;
-
-    $display("\n%t:\t Multiplication interrupted.", $time); #10;
+    #100;
     a = 256'hDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF;
-    b = '1; 
+    b = '1;
+    en = 1; #20; en = 0;
     $display("\n%t:\t Multiply %h x %h\n", $time, a, b); #5150;
 
     #100;

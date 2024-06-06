@@ -1,5 +1,7 @@
 // Sequential, N-bit x N-bit multiplier
-//  - Shift-and-Add-based
+//  - Shift-and-Add method used
+//  - slower multiplications
+//  - smaller footprint, less complex
 module seq_mult #(parameter N = 256)
   (
    input wire		  clk, en,
@@ -17,38 +19,12 @@ module seq_mult #(parameter N = 256)
   
   reg [1:0]  state, n_state;
   reg [$clog2(N):0] cnt;
-
-  // interrupted mult recovery
-  reg [N-1:0]	      a_cur, b_cur;
-  reg		      interrupt, interrupt_d;
-
-  always @(posedge clk or negedge rst_n, a, b)
-    if (!rst_n) begin
-      interrupt <= '0;
-      interrupt_d <= '0;
-    end else begin
-      interrupt <= (a_cur != a) || (b_cur != b);
-      interrupt_d <= interrupt;
-    end
   
-  always @(posedge clk or negedge rst_n, a, b)    
-    if (!rst_n) begin
-      a_cur <= '0;
-      b_cur <= '0;
-    end
-    else if (interrupt) begin
-      a_cur <= a;
-      b_cur <= b;
-    end else begin
-      a_cur <= a_cur;
-      b_cur <= b_cur;
-    end
-  
-  always @(posedge clk or negedge rst_n, a, b)
+  always @(posedge clk or negedge rst_n)
     begin
       if (!rst_n)
 	cnt <= '0;
-      else if (state == reset || state == done || interrupt)
+      else if (state == reset || state == done)
 	cnt <= '0;
       else if (state != done && cnt < N)
 	cnt <= cnt + 1'b1;
@@ -58,18 +34,14 @@ module seq_mult #(parameter N = 256)
 
   // n_state
   assign n_state = (!rst_n) ? reset :
-		   (interrupt) || (state == done) ? reset :
-		   (state == reset) && interrupt_d && en ? mult :
-		   (state == mult) && (cnt == N) || ((a_cur >> cnt) == '0) ? done : 
-		   (state == mult) && (cnt < N) && en ? mult : reset;
-
-  assign data_rdy = en && (state == done);
+		   (state == done) ? reset :
+		   (state == reset) && en ? mult :
+		   (state == mult) && (cnt < N) ? mult :
+		   (state == mult) && (cnt == N) ? done : reset;
     
-  always @(posedge clk or negedge rst_n, a, b)
+  always @(posedge clk or negedge rst_n)
     begin
       if (!rst_n)
-	state <= reset;
-      if (interrupt)
 	state <= reset;
       else
 	state <= n_state;
@@ -79,23 +51,23 @@ module seq_mult #(parameter N = 256)
     begin
       if (!rst_n) 
 	acc <= '0;
-      else if (interrupt)
-	acc <= '0;
       else
 	case(state)
 	  reset:
 	    acc <= '0;
 
 	  mult:
-	    acc <= (a_cur[cnt-1]) ? acc + (512'(b_cur) << (cnt-1)) : acc;
+	    acc <= (a[cnt-1]) ? acc + (512'(b) << (cnt-1)) : acc;
 
 	  default: // done
 	    acc <= acc;
 	endcase
     end
 
+  assign data_rdy = (state == done);
+  
   assign prod = (!rst_n) ? 'z :
-		(state == done) ? acc : prod;
+		(data_rdy) ? acc : prod;
 endmodule // seq_mult
 
 
