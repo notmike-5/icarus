@@ -1,5 +1,31 @@
 // helpful encoders
+module to_proj #(parameter N = 255)
+  (
+   input	  clk, en, rst_n,
+   input [N-1:0]  x, y,
+   output [N-1:0] X, Y, Z,
+   output [N-1:0] T
+   );
 
+  wire [N-1:0] r;
+  wire	       dr;
+  
+  mult_modp #(.N(N)) mult0 (.clk(clk), .en(en), .rst_n(rst_n), .x(x), .y(y), .prod(r), .dr(dr));
+  
+  assign X = (!rst_n) ? 'z :
+	     (dr) ? x : X;
+  
+  assign Y = (!rst_n) ? 'z :
+	     (dr) ? y : Y;
+  
+  assign Z = (!rst_n) ? 'z :
+	     (dr) ? 1 : Z;
+  
+  assign T = (!rst_n) ? 'z :
+	     (dr) ? r : T;
+endmodule
+
+  
 module priority_encode #(parameter N = 255)
   (
     input		       en,
