@@ -14,19 +14,6 @@
  // T3 = E*H
  // Z3 = F*G
  
- // Point Doubling:
- // A = X1^2
- // B = Y1^2
- // C = 2*Z1^2
- // H = A+B
- // E = H-(X1+Y1)^2
- // G = A-B
- // F = C+G
- // X3 = E*F
- // Y3 = G*H
- // T3 = E*H
- // Z3 = F*G
-
 // Sketch:
 
 // Stage 1: A, B, C, D can be calculated together.
@@ -150,4 +137,107 @@ module point_add #(parameter N = 255)
 		          (en) ? STAGE1 :
 			  (state == STAGE1 && en2) ? STAGE2 :
 			  (state == STAGE2 && data_rdy) ? DONE : n_state;
+endmodule
+
+
+// Point Doubling:
+// A = X1^2
+// B = Y1^2
+// C = 2*Z1^2
+// H = A+B
+// E = H-(X1+Y1)^2
+// G = A-B
+// F = C+G
+// X3 = E*F
+// Y3 = G*H
+// T3 = E*H
+// Z3 = F*G
+
+module point_dbl #(parameter N = 255)
+  (
+   input wire	  clk, en, rst_n,
+   input [N-1:0]  x, y, z, t,
+   output [N-1:0] X, Y, Z, T,
+   output	  data_rdy
+   );
+
+  reg [N-1:0]  A, B, C, E, F, G, H;
+  reg [N-1:0]  r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12;
+  wire	       dr0, dr1, dr2, dr3, dr4, dr5, dr6, dr7, dr8;
+  reg	       en1, en2;
+
+  assign en1 = en;
+  
+  // A = X^2
+  mult_modp #(.N(N)) mult0 (.clk(clk), .en(en1), .rst_n(rst_n), .x(x), .y(x), .prod(r0), .dr(d0));
+
+  assign A = (!rst_n) ? 'z :
+	     (d0) ? r0 : A;
+
+  // B = Y^2
+  mult_modp #(.N(N)) mult1 (.clk(clk), .en(en1), .rst_n(rst_n), .x(y), .y(y), .prod(r1), .dr(d1));
+
+  assign B = (!rst_n) ? 'z :
+	     (d1) ? r1 : B;
+
+  // C = 2 * Z^2
+  mult_modp #(.N(N)) mult2 (.clk(clk), .en(en1), .rst_n(rst_n), .x(z), .y(z), .prod(r2), .dr(d2));
+
+  assign C = (!rst_n) ? 'z :
+	     (d2) ? (r2 << 1) : C;
+
+  // H = A + B
+  add_modp #(.N(N)) add0 (.x(A), .y(B), .sum(r3));
+
+  assign H = (!rst_n) ? 'z :
+	     (d0 & d1) ? r3 : H;
+  
+  // E = H - (X1 + Y1)^2
+  add_modp #(.N(N)) add1 (.x(x), .y(y), .sum(r4));
+  
+  mult_modp #(.N(N)) mult3 (.clk(clk), .en(en1), .rst_n(rst_n), .x(r4), .y(r4), .prod(r5), .dr(d3));
+
+  sub_modp #(.N(N)) sub0 (.x(H), .y(r5), .diff(r6));
+
+  assign E = (!rst_n) ? 'z :
+	     (d3) ? r6 : E;
+  
+  // G = A-B
+  sub_modp #(.N(N)) sub1 (.x(A), .y(B), .diff(r7));
+
+  assign G = (!rst_n) ? 'z :
+	     (d0 & d1) ? r7 : G;
+  
+  // F = C+G
+  add_modp #(.N(N)) add2 (.x(C), .y(G), .sum(r8));
+
+  assign F = (!rst_n) ? 'z :
+	     (d0 & d1 & d2) ? r8 : F;
+
+
+  assign en2 = (d0 & d1 & d2 & d3);
+  
+  // X3 = E*F
+  mult_modp #(.N(N)) mult4 (.clk(clk), .en(en2), .rst_n(rst_n), .x(E), .y(F), .prod(r9), .dr(d4));
+
+  assign X = (!rst_n) ? 'z :
+	     (d4) ? r9 : X;
+  
+  // Y3 = G*H
+  mult_modp #(.N(N)) mult5 (.clk(clk), .en(en2), .rst_n(rst_n), .x(G), .y(H), .prod(r10), .dr(d5));
+
+  assign Y = (!rst_n) ? 'z :
+	     (d5) ? r10 : Y;
+  
+  // T3 = E*H
+  mult_modp #(.N(N)) mult6 (.clk(clk), .en(en2), .rst_n(rst_n), .x(E), .y(H), .prod(r11), .dr(d6));
+
+  assign T = (!rst_n) ? 'z :
+	     (d6) ? r11 : T;
+  
+  // Z3 = F*G
+  mult_modp #(.N(N)) mult7 (.clk(clk), .en(en2), .rst_n(rst_n), .x(F), .y(G), .prod(r12), .dr(d7));
+
+  assign Z = (!rst_n) ? 'z :
+	     (d7) ? r12 : Z;
 endmodule

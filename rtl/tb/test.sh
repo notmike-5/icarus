@@ -31,7 +31,8 @@ $BUILD_CMD mult_modp_tb mult_modp_tb.sv ../mult.sv ../add.sv ../reduce.sv ../enc
 
 $BUILD_CMD priority_encode_tb priority_encode_tb.sv ../encode.sv
 
-$BUILD_CMD point_add_tb point_add_tb.sv ../add.sv ../mult.sv ../reduce.sv ../encode.sv ../point_add.sv
+$BUILD_CMD point_add_tb point_add_tb.sv ../point_add.sv ./add.sv ../mult.sv ../reduce.sv ../encode.sv
+$BUILD_CMD point_dbl_tb point_dbl_tb.sv ../point_add.sv ../add.sv ../mult.sv ../reduce.sv ../encode.sv
 
 echo 'Build complete.\n'
 
@@ -75,3 +76,4 @@ fi
 
 # point_add.sv 
 ./point_add_tb
+./point_dbl_tb
