@@ -19,14 +19,14 @@ module seq_mult #(parameter N = 256)
   
   reg [1:0]  state, n_state;
   reg [$clog2(N):0] cnt;
-  
+
   always @(posedge clk or negedge rst_n)
     begin
       if (!rst_n)
 	cnt <= '0;
-      else if (state == reset || state == done)
+      else if ((state == reset) || (state == done))
 	cnt <= '0;
-      else if (state != done && cnt < N)
+      else if ((state != done) && (cnt < N))
 	cnt <= cnt + 1'b1;
       else
 	cnt <= cnt;  
@@ -35,7 +35,7 @@ module seq_mult #(parameter N = 256)
   // n_state
   assign n_state = (!rst_n) ? reset :
 		   (state == done) ? reset :
-		   (state == reset) && en ? mult :
+		   en ? mult :
 		   (state == mult) && (cnt < N) ? mult :
 		   (state == mult) && (cnt == N) ? done : reset;
     
@@ -64,7 +64,8 @@ module seq_mult #(parameter N = 256)
 	endcase
     end
 
-  assign data_rdy = (state == done);
+  assign data_rdy = (!rst_n) ? 'z :
+		    (state == done);
   
   assign prod = (!rst_n) ? 'z :
 		(data_rdy) ? acc : prod;
@@ -97,7 +98,7 @@ endmodule // mult_modp
 // multiplications) are performed in each iteration.
 module mod_exp #(parameter N = 255)
   (
-   input	  clk, rst_n,
+   input	  clk, en, rst_n,
    input [N-1:0]  g, 
    input [N-1:0]  k,
    output [N-1:0] r
@@ -105,78 +106,48 @@ module mod_exp #(parameter N = 255)
 
   reg [N-1:0]	       X, Y, P0, P1;
   reg [N-1:0]	       R0, R1;
-  reg [N-1:0]	       g_cur, k_cur;
   reg [$clog2(N)-1:0]  idx, i;
-  
-  wire		       dr0, dr1; 
-  reg		       en, en_d;
 
-  wire		       data_valid, done;
-  reg		       done_d; 
-  reg		       interrupt, interrupt_d, interrupt_dd;
+  wire		       dr0, dr1; 
+  reg		       data_valid, data_valid_d;
+  wire		       done;
+  reg		       done_d;
   
   priority_encode priority_encode0 (.en(rst_n), .n(k), .i(idx));
 
-  mult_modp square (.clk(clk), .en(en_d), .rst_n(rst_n), .x(X), .y(X), .prod(P0), .dr(dr0));
-  mult_modp multiply (.clk(clk), .en(en_d), .rst_n(rst_n), .x(X), .y(Y), .prod(P1), .dr(dr1));
-
-  always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      en <= '0;
-      en_d <= '0;
-    end else begin
-      en <= rst_n && (i < 8'hFF);
-      en_d <= en;
-    end
-  end   
+  mult_modp square (.clk(clk), .en(en || !done && data_valid_d), .rst_n(rst_n), .x(X), .y(X), .prod(P0), .dr(dr0));
+  mult_modp multiply (.clk(clk), .en(en || !done && data_valid_d), .rst_n(rst_n), .x(X), .y(Y), .prod(P1), .dr(dr1));
     
   assign data_valid = (dr0 && dr1);
-  
+  always @(posedge clk or negedge rst_n)
+    if (!rst_n)
+      data_valid_d = 'z;
+    else
+      data_valid_d <= data_valid;
+
   assign done = data_valid && (i == 0);
   always @(posedge clk or negedge rst_n)
-    done_d <= done;
-  
-  assign interrupt = interrupt_d ^ interrupt_dd;
-  
-  always @(posedge clk or negedge rst_n, g, k)
-    if (!rst_n) begin
-      interrupt_d <= '0;
-      interrupt_dd <= '0;
-    end else begin
-      interrupt_d <= (g_cur != g) || (k_cur != k);
-      interrupt_dd <= interrupt_d;
-    end
-
-  always_comb 
-    if (!rst_n) begin
-      g_cur = '0;
-      k_cur = '0;
-    end
-    else if (interrupt) begin
-      g_cur = g;
-      k_cur = k;
-    end else begin
-      g_cur = g_cur;
-      k_cur = k_cur;
-    end
-  
-  always @(posedge clk or negedge rst_n, idx) begin
     if (!rst_n)
+      done_d <= '0;
+    else
+      done_d <= done;
+
+  always @(posedge clk or negedge rst_n, idx)
+    if (!rst_n)
+      i <= '0;
+    else if (en)
       i <= idx;
-    else if (interrupt)
-      i <= idx; 
-    else if (data_valid && i < 8'hFF)
+    else if (data_valid && (i > 0))
       i <= i - 1;
     else 
       i <= i;
-    end
   
-  always @(posedge clk or negedge rst_n) begin
+  always @(posedge clk or negedge rst_n)
     if (!rst_n) begin
       R0 <= 'z;
       R1 <= 'z;
     end 
-    else if (interrupt) begin
+    else if (en) begin
       R0 <= 1;
       R1 <= g;
     end 
@@ -194,28 +165,36 @@ module mod_exp #(parameter N = 255)
       R0 <= R0;
       R1 <= R1;
     end
-  end
 
-  always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-      X <= 'z;
-      Y <= 'z;
-    end
-    else if (!done) begin
-      if (k[i] == 0) begin
-	X <= R0;
-	Y <= R1;
-      end 
-      else begin
-	X <= R1;
-	Y <= R0;
-      end
-    end else begin
-      X <= X;
-      Y <= Y;
-    end
-  end
-
+  assign X = (!rst_n) ? 'z :
+	     (k[i] == 0) ? R0 : R1;
+  assign Y = (!rst_n) ? 'z :
+	     (k[i] == 0) ? R1: R0;
+  
 assign r = (!rst_n) ? 'z : 
 	   (done_d) ? R0 : r;
 endmodule // mod_exp
+
+
+module modp_inv #(parameter N = 255)
+  (
+   input clk, en, rst_n,
+   input [N-1:0] x,
+   output reg [N-1:0] r
+   );
+
+  wire [N-1:0] r0;
+  
+  // p_2 == p - 2 == (2**255 - 19) - 2
+  
+  localparam p_2 = 255'h7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeb;
+  
+  mod_exp #(.N(N)) mod_exp0 (.clk(clk), .en(en), .rst_n(rst_n), .g(x), .k(p_2), .r(r0));
+
+  always @(r0)
+    if (!rst_n)
+      r = 'z;
+    else
+      r = r0;
+endmodule // modp_inv
+

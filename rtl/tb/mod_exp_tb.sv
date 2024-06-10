@@ -3,16 +3,17 @@
 // Testbench: Modular Exponentiation (Montgomery Ladder)
 
 module mod_exp_tb #(parameter N = 255) ();
-  reg            clk, rst_n;
+  reg            clk, en; 
+  reg		 rst_n;
   reg  [N-1:0]	 x, k;
   wire [N-1:0]	 result;
   wire		 data_rdy;
   
-  mod_exp mod_exp0 (clk, rst_n, x, k, result);
+  mod_exp mod_exp0 (clk, en, rst_n, x, k, result);
 
   initial 
     begin
-      clk = 0;
+      clk = 0; en = 0;
       rst_n = 0;
       x = 0; k = 0;
     end
@@ -27,15 +28,15 @@ module mod_exp_tb #(parameter N = 255) ();
     $dumpvars(0, mod_exp_tb);
 
     $monitor("%t:\n\t\tx: %h\n\t\t\n\t\tk: %h\n\t\tresult: %d", $time, x, k, result);
-    
-    // TEST 1: 5^12 = 
-    #1000;
+
+    // TEST 1: 5^12 =
+    #10; rst_n = 1;
     x = 5;
     k = 12;
-    rst_n = 1;
+    en = 1; #20; en = 0;
     $display("\n%t:\t %d^%d  (mod p)", $time, 4'(x), 4'(k));
     
-    #10000;
+    #25000;
     $finish;
   end
 endmodule

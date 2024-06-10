@@ -6,6 +6,7 @@ if [ ! -d waves/ ]; then
 fi
 
 BUILD_CMD='iverilog -g2005-sv -o'
+
 echo "Initiating build..."
 
 $BUILD_CMD half_adder_tb half_adder_tb.sv ../add.sv
@@ -29,12 +30,12 @@ $BUILD_CMD reduce_tb reduce_tb.sv ../reduce.sv ../add.sv
 $BUILD_CMD mod_p_tb mod_p_tb.sv ../mod_p.sv ../divu.sv
 $BUILD_CMD mult_modp_tb mult_modp_tb.sv ../mult.sv ../add.sv ../reduce.sv ../encode.sv
 
-$BUILD_CMD priority_encode_tb priority_encode_tb.sv ../encode.sv
+$BUILD_CMD priority_encode_tb priority_encode_tb.sv ../encode.sv ../mult.sv ../reduce.sv ../add.sv 
 
 $BUILD_CMD point_add_tb point_add_tb.sv ../point_add.sv ../add.sv ../mult.sv ../reduce.sv ../encode.sv
 $BUILD_CMD point_dbl_tb point_dbl_tb.sv ../point_add.sv ../add.sv ../mult.sv ../reduce.sv ../encode.sv
 
-echo 'Build complete.\n'
+echo 'Build complete.'
 
 read -s -n 1 -t 5 -p $'\nContinue...?\n'
  
