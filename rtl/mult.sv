@@ -180,7 +180,8 @@ module modp_inv #(parameter N = 255)
   (
    input clk, en, rst_n,
    input [N-1:0] x,
-   output reg [N-1:0] r
+   output reg [N-1:0] r,
+   output wire dr
    );
 
   wire [N-1:0] r0;
