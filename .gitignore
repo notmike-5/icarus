@@ -7,5 +7,7 @@
 rtl/tb/*_tb
 docs/
 img/
+node_modules/
 rtl/EdDSA
 src/testing.py
+package-lock.json

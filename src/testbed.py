@@ -1,7 +1,3 @@
-'''Test script for looking into point addition/multiplication routines'''
-debug = False
-
-
 def bitlen(n: int):
     '''Get the bitlength of some integer.'''
     # return f"{len(format(n, 'b'))}-bit"
@@ -24,57 +20,20 @@ a = -1
 L = q = 2 ^ 252 + 27742317777372353535851937790883648493  # order of group
 
 
-######################
-## Modular Inverses ##
-######################
-# TODO: complete inversion with square and multiply via montgomery ladder
-def inv(x):
-    '''Compute modular inverse with square and multiply.'''
-    return None
-
-
 def modp_inv(x):
     '''Compute modular inverse the easy way.'''
     return pow(x, p-2, p)
 
 
-#######################
-## Point Compression ##
-#######################
-
-# Square root of -1
-modp_sqrt_m1 = pow(2, (p-1) // 4, p)
+def to_proj(x, y):
+    '''project an affine point to extended/projective coordinates'''
+    return (x, y, 1, x*y)
 
 
-def recover_x(y, sign):
-    '''Compute corresponding x-coordinate, with low bit corresponding
-    to sign, or return None on failure'''
-    if y >= p:
-        return None
-    x2 = (y*y-1) * modp_inv(d*y*y+1)
-    if x2 == 0:
-        if sign:
-            return None
-        return 0
-
-    # Compute square root of x2
-    x = pow(x2, (p+3) // 8, p)
-    if (x*x - x2) % p != 0:
-        x = x * modp_sqrt_m1 % p
-    if (x*x - x2) % p != 0:
-        return None
-
-    if (x & 1) != sign:
-        x = p - x
-    return x
-
-
-def extract(p1):
-    '''TODO: extract the x- and y-coordinates of a compressed point'''
-    n = hex(p1)[2:]
-    x = int(n[0:31], 16)
-    y = int(n[32:63], 16)
-    return x, y
+def to_affine(x, y, z, t):
+    '''return extended/projective point to affine coordinates'''
+    zinv = modp_inv(z)
+    return (x*zinv % p, y*zinv % p)
 
 
 ######################
@@ -100,18 +59,6 @@ def dbl(x, y):
     return x3, y3
 
 
-# Extended (projective)
-def to_proj(x, y):
-    '''project an affine point to extended/projective coordinates'''
-    return (x, y, 1, x*y)
-
-
-def to_affine(x, y, z, t):
-    '''return extended/projective point to affine coordinates'''
-    zinv = modp_inv(z)
-    return (x*zinv % p, y*zinv % p)
-
-# wrapped exceedingly excessively in parens to convince myself that this method works
 def proj_add(x1, y1, z1, t1, x2, y2, z2, t2):
     '''add in extended/projective coordinates'''
     A = (((y1 - x1) % p) * ((y2 - x2) % p)) % p
@@ -122,41 +69,6 @@ def proj_add(x1, y1, z1, t1, x2, y2, z2, t2):
     F = (D - C) % p
     G = (D + C) % p
     H = (B + A) % p
-
-    if debug:
-        print("\nProjective addition of...\n")
-        # Point 1
-        print(f"P1: ({hex(x1)},{hex(y1)},{hex(z1)},{hex(t1)})")
-        print("x1:", hex(x1))
-        print("y1:", hex(y1))
-        print("z1:", hex(z1))
-        print("t1:", hex(t1), "\n")
-        # Point 2
-        print(f"P2: ({hex(x2)},{hex(y2)},{hex(z2)},{hex(t2)})")
-        print("x2:", hex(x2))
-        print("y2:", hex(y2))
-        print("z2:", hex(z2))
-        print("t2:", hex(t2), "\n")
-        # A
-        print(f"(y1 - x1) : {hex(y1 - x1)}")
-        print(f"(y2 - x2) : {hex(y2 - x2)}")
-        print(
-            f"A = (y1 - x1) * (y2 - x2) : {hex(A)}")
-        # B
-        print(f"(y1 + x1) : {hex(y1 + x1)}")
-        print(f"(y2 + x2) : {hex(y2 + x2)}")
-        print(
-            f"B = (y1 + x1) * (y2 + x2) : {hex(B)}")
-        # C,D
-        print(f"C = 2 * t1 * t2 * d : {hex(C)}")
-        print(f"D = 2 * z1 * z2 : {hex(D)}")
-        # E,F,G,H
-        print(f"E = B - A : {hex(E)}")
-        print(f"F = D - C : {hex(F)}")
-        print(f"G = D + C : {hex(G)}")
-        print(f"H = B + A : {hex(H)}")
-        # Result
-        print(f"\nResult : ({hex((E*F) % p)}, {hex((G*H) % p)}, {hex((F*G) % p)}, {hex((E*H) % p)})")
 
     return ((E*F) % p, (G*H) % p, (F*G) % p, (E*H) % p)
 
@@ -170,26 +82,6 @@ def proj_dbl(x, y, z, t):
     E = (H - ((x + y) % p)**2 % p) % p
     G = (A - B) % p
     F = (C + G) % p
-
-    if debug:
-        print("\nProjective doubling of...\n")
-        # Point
-        print(f"Point: ({hex(x)}, {hex(y)}, {hex(z)}, {hex(t)})")
-        print(f"x: {x}")
-        print(f"y: {y}")
-        print(f"z: {z}")
-        print(f"t: {t}\n")
-        # A,B,C,H,E,G,F
-        print(f"A = x^2 : {hex(A)}")
-        print(f"B = y^2 : {hex(B)}")
-        print(f"C =  : {hex(C)}")
-        print(f"H =  : {hex(H)}")
-        print(f"E =  : {hex(E)}")
-        print(f"G = A - B : {hex(G)}")
-        print(f"F =  : {hex(F)}")
-        # Result
-        print(f"\nResult : ({hex((E*F)%p)}, {hex((G*H)%p)}, {hex((F*G)%p)}, {hex((E*H)%p)})")
-
     return ((E*F) % p, (G*H) % p, (F*G) % p, (E*H) % p)
 
 
@@ -201,14 +93,29 @@ def mult(k, P):
     for n in range(bitlen(k)):
       if k & (1 << n):
           R1 = proj_add(*R0, *R1)
-          R0 = proj_dbl(*R0)
+          R0 = proj_add(*R0, *R0)
       else:
           R0 = proj_add(*R0, *R1)
-          R1 = proj_dbl(*R1)
+          R1 = proj_add(*R1, *R1)
 
       n += 1
 
     return R0
+
+
+def point_mult(s, P):
+    Q = (0, 1, 1, 0)
+    while s > 0:
+        if s & 1:
+            Q = proj_add(*Q, *P)
+        P = proj_add(*P, *P)
+
+        s >>= 1
+
+    return Q
+
+
+
 
 
 if __name__== "__main__":
@@ -274,10 +181,10 @@ if __name__== "__main__":
     assert dbl(0, -1) == (0, 1)
 
     # Test: compute 2G from G using proj_add and proj_dbl
-    assert to_affine(*proj_add(*G, *G)) == to_affine(*proj_dbl(*G)) == twoG
+    assert to_affine(*proj_add(*G, *G)) == twoG
 
     # Test: compute 2G using mult
-    result = to_affine(*mult(2, G))
+    result = to_affine(*point_mult(2, G))
     assert result == twoG, f"Test failed: compute 2G using mult()\nExpected:\n{twoG}\nGot:\n{result}"
 
     # Test: compute 5G from twoG using proj_add and proj_dbl
@@ -285,7 +192,9 @@ if __name__== "__main__":
     assert result == fiveG, f'\nExpected\n{fiveG}\nGot\n {result}\n'
 
     # Test: compute 5G using mult
-    result = to_affine(*mult(5, G))
+    result = to_affine(*point_mult(5, G))
     assert result == fiveG, f'\nExpected\n{fiveG}\nGot\n {result}\n'
 
     # Test: compute aG using mult
+    result = to_affine(*point_mult(exp_a, G))
+    assert result == aG, f'\nExpected\n{aG}\nGot\n {result}\n'
