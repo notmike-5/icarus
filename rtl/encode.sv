@@ -1,14 +1,14 @@
 // helpful encoders
 
-module to_affine #(paramter N = 255)
+module to_affine #(parameter N = 255)
   (
-   input clk, en, rst_n,
-   input X, Y, Z, T,
+   input  clk, en, rst_n,
+   input  X, Y, Z, T,
    output x, y
    );
 
-  wire [N-1:0] r;
-  wire	       dr;
+  wire [N-1:0]           r;
+  wire                   dr;
 
   modp_inv mod_inv0 (.clk(), .en(), .rst_n(), .x(), .r(r));
 endmodule // to_affine
@@ -16,26 +16,26 @@ endmodule // to_affine
 
 module to_proj #(parameter N = 255)
   (
-    input	   clk, en, rst_n,
-    input [N-1:0]  x, y,
-    output [N-1:0] X, Y, Z,
-    output [N-1:0] T
+   input          clk, en, rst_n,
+   input [N-1:0]  x, y,
+   output [N-1:0] X, Y, Z,
+   output [N-1:0] T
    );
 
-  wire [N-1:0] r;
-  wire	       dr;
-  
+  wire [N-1:0]           r;
+  wire                   dr;
+
   mult_modp #(.N(N)) mult0 (.clk(clk), .en(en), .rst_n(rst_n), .x(x), .y(y), .prod(r), .dr(dr));
-  
+
   assign X = (!rst_n) ? 'z :
 	     (dr) ? x : X;
-  
+
   assign Y = (!rst_n) ? 'z :
 	     (dr) ? y : Y;
-  
+
   assign Z = (!rst_n) ? 'z :
 	     (dr) ? 1 : Z;
-  
+
   assign T = (!rst_n) ? 'z :
 	     (dr) ? r : T;
 endmodule // to_proj
@@ -43,15 +43,15 @@ endmodule // to_proj
 
 module priority_encode #(parameter N = 255)
   (
-    input		       en,
-    input [N-1:0]	       n,
-    output reg [$clog2(N)-1:0] i
+   input                      en,
+   input [N-1:0]              n,
+   output reg [$clog2(N)-1:0] i
    );
 
   assign i = (!en) ? 8'bzzzzzzzz :
-	     (n[254]) ? 8'd254 : 
+	     (n[254]) ? 8'd254 :
 	     (n[253]) ? 8'd253 :
-	     (n[252]) ? 8'd252 : 
+	     (n[252]) ? 8'd252 :
 	     (n[251]) ? 8'd251 :
 	     (n[250]) ? 8'd250 :
 	     (n[249]) ? 8'd249 :
@@ -304,3 +304,20 @@ module priority_encode #(parameter N = 255)
 	     (n[2]) ? 8'd2 :
 	     (n[1]) ? 8'd1 : 8'd0;
 endmodule // priority_encode
+
+/* Possible Alternative
+
+ module priority_encode #(parameter N = 255)
+  (
+   input      [N-1:0]           n,
+   output reg [$clog2(N)-1:0]   i
+   );
+
+  integer k;
+  always @(*) begin
+    i = 0;
+    for (k = 0; k < N; k = k + 1)
+      if (n[k]) i = k[$clog2(N)-1:0];
+  end
+
+endmodule */

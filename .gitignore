@@ -4,10 +4,10 @@
 **/waves
 **/.vcd
 **/work
-rtl/tb/*_tb
+rtl/build/
+rtl/EdDSA/
 docs/
 img/
 node_modules/
-rtl/EdDSA
 src/testing.py
 package-lock.json
