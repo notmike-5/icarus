@@ -18,7 +18,7 @@ The `src/` directory contains all relevant software in the project.
 
 ## Obtaining / Building
 
-A great way to get a feel for the design is just to build the modules and run the tests. Luckily, this is easy to do and assumes very few dependencies other than `iverilog`.
+A great way to get a feel for the design is just to build the modules and run the tests. Luckily, this is easy to do and assumes very few dependencies other than `git` and `iverilog`.
 
 This repository can be acquired using git:
 
