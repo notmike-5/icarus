@@ -3,7 +3,7 @@
 icarus is a hardware implementation of the Edwards Digital Signature Algorithm (EdDSA) targeting a Field Programmable Gate Array (FPGA). Also included are functional software examples of EdDSA which are helpful to get a feel for the signature scheme and its moving parts and for examining the group operation and modular exponentiation in particular.
 
 
-== How is this project organized? ==
+## How is this project organized?
 
 In the root directory you will find three directories `docs/`, `rtl/`, and `src/`.
 
@@ -16,7 +16,7 @@ Inside this directory you will also find `rtl/tb/` which is where the tests are 
 The `src/` directory contains all relevant software in the project.
 
 
-== Obtaining / Building ==
+## Obtaining / Building
 
 A great way to get a feel for the design is just to build the modules and run the tests. Luckily, this is easy to do and assumes very few dependencies other than `iverilog`.
 
@@ -35,22 +35,21 @@ make
 
 Once built, the simulations and waveforms can be found in `build/` and `build/waves`.
 
-
-== Running the Tests ==
+## Running the Tests
 
 To run all tests: `make test`
 
 To run an individual test: `make run/<testbench>`  (e.g. `make run/cla_tb`)
 
 
-== What is EdDSA? ==
+## What is EdDSA?
 
 EdDSA is a modern, public-key digital signature scheme that uses a variant of Schnorr signature based on twisted Edwards curves. EdDSA was created by Daniel Bernstein, Niels Duif, Tanja Lange, Peter Schwabe, and Bo-Yin Yang. They described the scheme in 2011 in "High-speed high-security signatures" (ed25519). It was designed to be extremely fast without sacrificing security. The reference implementation is public-domain software (https://ed25519.cr.yp.to/software.html).
 
 There are several variants of EdDSA. Ed25519 is the version of EdDSA instantiated with the elliptic curve edwards25519.
 
 
-== Why use EdDSA or Ed25519? ==
+## Why use EdDSA or Ed25519?
 
 - Fast single-signature verification.
   - 273,364 cycles on authors' device.
