@@ -11,7 +11,7 @@ The `docs/` directory contains documentation about the project including source 
 
 The `rtl/` directory contains the synthesizeable register-transfer level (RTL) descriptions of the design, written (mostly) in SystemVerilog.
 
-Inside this directory you will also find `rtl/tb/` which is where the tests are found. Every module in `rtl/` targets a test file in `rtl/tb/`. Those test files provide synthesis to the module(s) that will take each through its paces and test things like illegal values, boundary conditions, etc. Waveforms and other auxiliary data are also generated in this directory to facilitate more in-depth debugging, testing, and verification.
+Inside this directory you will also find `rtl/tb/` which is where the tests are found. Every module in `rtl/` targets a test file in `rtl/tb/`. Those test files provide synthesis to the module(s) that will take each through its paces and test things like illegal values, boundary conditions, etc. Waveforms and other auxiliary data are generated in `rtl/build` to facilitate in-depth debugging, testing, and verification.
 
 The `src/` directory contains all relevant software in the project.
 
