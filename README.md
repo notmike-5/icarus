@@ -1,6 +1,6 @@
 # icarus
 
-icarus is a hardware implementation of the Edwards Digital Signature Algorithm (EdDSA) targeting a Field Programmable Gate Array (FPGA). Also included are functional software examples of EdDSA which are helpful to get a feel for the signature scheme and its moving parts and for examining the group operation and modular exponentiation in particular.
+icarus is a hardware accelerator for the Edwards Digital Signature Algorithm (EdDSA) targeting a Field Programmable Gate Array (FPGA). Also included are functional software examples of EdDSA which are helpful to get a feel for the signature scheme and its moving parts and for examining the group operation and modular exponentiation in particular.
 
 
 ## How is this project organized?
